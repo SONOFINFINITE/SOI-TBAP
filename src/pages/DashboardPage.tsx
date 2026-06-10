@@ -179,7 +179,6 @@ export function DashboardPage() {
           className="grid grid-cols-1 md:grid-cols-4 gap-4"
         >
           <StatCard
-            className="md:col-span-2"
             icon={<Robot size={24} weight="duotone" />}
             label="Активный бот"
             value={stats?.botUsername || '...'}
@@ -197,7 +196,24 @@ export function DashboardPage() {
             value={`${enabledCommands}`}
             subValue={`из ${commands.length}`}
           />
+          <StatCard
+            icon={<Timer size={24} weight="duotone" />}
+            label="Таймеры"
+            value={`${enabledTimers}`}
+            subValue={`из ${timers.length}`}
+          />
         </motion.div>
+
+        {error && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            className="text-xs text-destructive bg-destructive/5 border border-destructive/10 rounded-lg px-4 py-3 flex items-center justify-between"
+          >
+            <span>{error}</span>
+            <button onClick={() => setError('')} className="underline text-white/50 hover:text-white">Закрыть</button>
+          </motion.div>
+        )}
 
         {/* Search & Actions Bar */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
