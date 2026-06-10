@@ -138,14 +138,14 @@ export function DashboardPage() {
 
   if (loading && !stats) {
     return (
-      <div className="min-h-[100dvh] flex items-center justify-center bg-background">
+      <div className="min-h-dvh flex items-center justify-center bg-background">
         <CircleNotch size={40} className="animate-spin text-primary" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-[100dvh] bg-background text-foreground pb-20 relative overflow-hidden">
+    <div className="min-h-dvh bg-background text-foreground pb-20 relative overflow-hidden">
       {/* Background Anime Blobs */}
       <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
       <div className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-blue-200/20 blur-[100px] rounded-full pointer-events-none" />
@@ -185,7 +185,6 @@ export function DashboardPage() {
             icon={<Robot size={28} className="text-primary" weight="duotone" />}
             label="Активный бот"
             value={stats?.botUsername || '...'}
-            subValue={`Uptime: ${stats ? Math.floor(stats.uptime / 3600) : 0}h`}
           />
           <StatCard
             icon={stats?.stream === 'online' ? <WifiHigh size={28} className="text-success" weight="duotone" /> : <WifiSlash size={28} className="text-muted-foreground" />}
@@ -438,7 +437,7 @@ function CommandCard({
           </button>
         </div>
 
-        <p className="text-sm text-foreground/80 line-clamp-2 min-h-[2.5rem] leading-relaxed" title={command.response}>
+        <p className="text-sm text-foreground/80 line-clamp-2 min-h-10 leading-relaxed" title={command.response}>
           {command.response}
         </p>
       </div>
@@ -484,43 +483,53 @@ function TimerCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, duration: 0.5, ease: [0.175, 0.885, 0.32, 1.275] }}
       onClick={onEdit}
-      className={cn('paper-card paper-card-hover group', timer.enabled === 0 && 'grayscale opacity-60')}
+      className={cn('paper-card paper-card-hover group flex flex-col', timer.enabled === 0 && 'grayscale opacity-60')}
     >
-      <div className="p-6 flex items-center justify-between gap-6">
-        <div className="flex-1 space-y-2">
-          <div className="flex items-center gap-3">
-            <code className="text-lg font-bold font-mono text-foreground group-hover:text-primary transition-colors">{timer.name}</code>
-            <span className="text-xs bg-accent text-primary px-3 py-1 rounded-full font-bold tracking-tight">
-              {timer.interval_minutes} мин
-            </span>
+      <div className="p-6 flex-1 space-y-4">
+        <div className="flex items-start justify-between">
+          <div className="space-y-1">
+            <div className="flex items-center gap-3">
+              <code className="text-lg font-bold font-mono text-foreground group-hover:text-primary transition-colors">{timer.name}</code>
+              <span className="text-xs bg-accent text-primary px-3 py-1 rounded-full font-bold tracking-tight">
+                {timer.interval_minutes} мин
+              </span>
+            </div>
+            <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold">
+              Авто-сообщение
+            </p>
           </div>
-          <p className="text-sm text-foreground/80 truncate leading-relaxed" title={timer.message}>
-            {timer.message}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-3">
           <button
             onClick={(e) => { e.stopPropagation(); onToggle(); }}
             disabled={togglingId === timer.id}
-            className="w-12 h-12 rounded-full bg-muted flex items-center justify-center hover:bg-border transition-all"
+            className="w-10 h-10 rounded-full bg-muted flex items-center justify-center hover:bg-border transition-all"
           >
             {togglingId === timer.id ? (
-              <CircleNotch size={24} className="animate-spin" />
+              <CircleNotch size={20} className="animate-spin" />
             ) : timer.enabled === 1 ? (
-              <ToggleRight size={32} className="text-success" weight="fill" />
+              <ToggleRight size={28} className="text-success" weight="fill" />
             ) : (
-              <ToggleLeft size={32} className="text-muted-foreground" />
+              <ToggleLeft size={28} className="text-muted-foreground" />
             )}
           </button>
-          <div className="w-px h-10 bg-border mx-1" />
+        </div>
+
+        <p className="text-sm text-foreground/80 line-clamp-2 min-h-10 leading-relaxed" title={timer.message}>
+          {timer.message}
+        </p>
+      </div>
+
+      <div className="px-6 py-4 flex items-center justify-between border-t border-border bg-muted/30 rounded-b-3xl">
+        <div className="flex gap-2">
           <button
             onClick={(e) => { e.stopPropagation(); onDelete(); }}
             disabled={deletingId === timer.id}
-            className="w-12 h-12 rounded-full bg-white flex items-center justify-center hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all shadow-sm border border-border"
+            className="w-9 h-9 rounded-full bg-white flex items-center justify-center hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all shadow-sm border border-border"
           >
-            {deletingId === timer.id ? <CircleNotch size={20} className="animate-spin" /> : <Trash size={20} />}
+            {deletingId === timer.id ? <CircleNotch size={16} className="animate-spin" /> : <Trash size={16} />}
           </button>
+        </div>
+        <div className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+          Редактировать <ArrowRight size={14} />
         </div>
       </div>
     </motion.div>
