@@ -16,7 +16,6 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <div className="noise-overlay" />
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route element={<ProtectedRoute />}>

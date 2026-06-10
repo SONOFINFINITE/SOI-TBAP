@@ -147,74 +147,80 @@ export function CommandFormPage() {
   }
 
   return (
-    <div className="min-h-[100dvh] bg-background text-white pb-20">
-      <header className="fixed top-0 left-0 right-0 z-50 px-4 py-4 pointer-events-none">
-        <div className="max-w-2xl mx-auto flex items-center gap-3 pointer-events-auto">
+    <div className="min-h-[100dvh] bg-background text-foreground pb-20 relative overflow-hidden">
+      {/* Background Anime Blobs */}
+      <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
+
+      <header className="sticky top-0 z-50 px-4 py-4 glass-light mb-8">
+        <div className="max-w-2xl mx-auto flex items-center gap-4">
           <button
             onClick={() => navigate(-1)}
-            className="glass w-11 h-11 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors text-white/70"
+            className="w-12 h-12 rounded-full bg-white border border-border shadow-sm flex items-center justify-center hover:bg-muted transition-all active:scale-95 text-foreground"
           >
-            <ArrowLeft size={18} />
+            <ArrowLeft size={20} />
           </button>
-          <div className="glass px-4 h-11 rounded-full flex items-center gap-3">
-            <CommandIcon size={20} className="text-white" weight="duotone" />
-            <span className="font-bold text-xs tracking-tight uppercase">
-              {isEdit ? 'Редактировать' : 'Создать'}
+          <div className="flex items-center gap-3">
+            <div className="bg-muted p-2 rounded-xl">
+              <CommandIcon size={24} className="text-primary" weight="duotone" />
+            </div>
+            <span className="font-serif font-bold text-xl tracking-tight">
+              {isEdit ? 'Редактировать команду' : 'Новая команда'}
             </span>
           </div>
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-4 pt-24">
+      <main className="max-w-2xl mx-auto px-4 relative z-10">
         <motion.form 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.175, 0.885, 0.32, 1.275] }}
           onSubmit={handleSubmit} 
           className="space-y-8"
         >
           {/* Триггер */}
           <FieldGroup label="Триггер" error={fieldErrors.trigger}>
-            <div className="double-bezel">
+            <div className="bg-white rounded-2xl shadow-sm border border-border overflow-hidden focus-within:ring-2 focus-within:ring-primary/50 transition-shadow">
               <input
                 type="text"
                 value={trigger}
                 onChange={(e) => setTrigger(e.target.value)}
                 placeholder="!команда"
-                className="w-full h-11 px-4 double-bezel-inner text-sm font-mono focus:outline-none focus:ring-1 focus:ring-white/20"
+                className="w-full h-14 px-5 text-base font-mono focus:outline-none bg-transparent placeholder:text-muted-foreground/50"
               />
             </div>
           </FieldGroup>
 
           {/* Тип */}
           <FieldGroup label="Тип команды">
-            <div className="double-bezel">
+            <div className="bg-white rounded-2xl shadow-sm border border-border overflow-hidden focus-within:ring-2 focus-within:ring-primary/50 transition-shadow">
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value as CommandType)}
-                className="w-full h-11 px-4 double-bezel-inner text-sm focus:outline-none focus:ring-1 focus:ring-white/20 appearance-none cursor-pointer"
+                className="w-full h-14 px-5 text-base focus:outline-none bg-transparent appearance-none cursor-pointer"
               >
                 {ALL_TYPES.map((t) => (
-                  <option key={t} value={t} className="bg-black">
+                  <option key={t} value={t}>
                     {COMMAND_TYPE_LABELS[t]}
                   </option>
                 ))}
               </select>
             </div>
-            <div className="flex items-start gap-2 mt-2 px-1">
-              <Info size={14} className="mt-0.5 text-white/30" />
-              <p className="text-[11px] text-white/40 leading-relaxed">{COMMAND_TYPE_DESCRIPTIONS[type]}</p>
+            <div className="flex items-start gap-2 mt-3 px-2">
+              <Info size={16} className="mt-0.5 text-primary shrink-0" />
+              <p className="text-sm text-muted-foreground leading-relaxed">{COMMAND_TYPE_DESCRIPTIONS[type]}</p>
             </div>
           </FieldGroup>
 
           {/* Ответ */}
           <FieldGroup label="Шаблон ответа" error={fieldErrors.response}>
-            <div className="double-bezel">
+            <div className="bg-white rounded-2xl shadow-sm border border-border overflow-hidden focus-within:ring-2 focus-within:ring-primary/50 transition-shadow">
               <textarea
                 value={response}
                 onChange={(e) => setResponse(e.target.value)}
                 placeholder="@{user}, текст ответа"
-                rows={4}
-                className="w-full px-4 py-3 double-bezel-inner text-sm focus:outline-none focus:ring-1 focus:ring-white/20 resize-none"
+                rows={5}
+                className="w-full p-5 text-base focus:outline-none bg-transparent resize-none placeholder:text-muted-foreground/50"
               />
             </div>
           </FieldGroup>
@@ -222,62 +228,60 @@ export function CommandFormPage() {
           {/* Варианты */}
           {needsVariants && (
             <FieldGroup label={isRange ? 'Диапазоны' : 'Варианты'} error={fieldErrors.variants}>
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {isRange ? (
                   rangeVariants.map((r, i) => (
-                    <div key={i} className="double-bezel">
-                      <div className="double-bezel-inner p-4 space-y-3">
-                        <div className="flex gap-2">
-                          <input
-                            type="number"
-                            value={r.min}
-                            onChange={(e) => {
-                              const next = [...rangeVariants]
-                              next[i] = { ...r, min: Number(e.target.value) }
-                              setRangeVariants(next)
-                            }}
-                            placeholder="Min"
-                            className="w-full h-9 px-3 rounded-lg bg-white/5 border border-white/5 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-white/20"
-                          />
-                          <input
-                            type="number"
-                            value={r.max}
-                            onChange={(e) => {
-                              const next = [...rangeVariants]
-                              next[i] = { ...r, max: Number(e.target.value) }
-                              setRangeVariants(next)
-                            }}
-                            placeholder="Max"
-                            className="w-full h-9 px-3 rounded-lg bg-white/5 border border-white/5 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-white/20"
-                          />
-                          {rangeVariants.length > 1 && (
-                            <button
-                              type="button"
-                              onClick={() => setRangeVariants(rangeVariants.filter((_, j) => j !== i))}
-                              className="w-9 h-9 shrink-0 rounded-lg bg-white/5 flex items-center justify-center text-white/20 hover:text-destructive transition-colors"
-                            >
-                              <Trash size={14} />
-                            </button>
-                          )}
-                        </div>
+                    <div key={i} className="paper-card p-5 space-y-4">
+                      <div className="flex gap-3">
                         <input
-                          type="text"
-                          value={r.text}
+                          type="number"
+                          value={r.min}
                           onChange={(e) => {
                             const next = [...rangeVariants]
-                            next[i] = { ...r, text: e.target.value }
+                            next[i] = { ...r, min: Number(e.target.value) }
                             setRangeVariants(next)
                           }}
-                          placeholder="Текст для этого диапазона"
-                          className="w-full h-9 px-3 rounded-lg bg-white/5 border border-white/5 text-xs focus:outline-none focus:ring-1 focus:ring-white/20"
+                          placeholder="Min"
+                          className="w-full h-12 px-4 rounded-xl bg-muted border border-border text-base font-mono focus:outline-none focus:ring-2 focus:ring-primary/50"
                         />
+                        <input
+                          type="number"
+                          value={r.max}
+                          onChange={(e) => {
+                            const next = [...rangeVariants]
+                            next[i] = { ...r, max: Number(e.target.value) }
+                            setRangeVariants(next)
+                          }}
+                          placeholder="Max"
+                          className="w-full h-12 px-4 rounded-xl bg-muted border border-border text-base font-mono focus:outline-none focus:ring-2 focus:ring-primary/50"
+                        />
+                        {rangeVariants.length > 1 && (
+                          <button
+                            type="button"
+                            onClick={() => setRangeVariants(rangeVariants.filter((_, j) => j !== i))}
+                            className="w-12 h-12 shrink-0 rounded-xl bg-white border border-border flex items-center justify-center text-muted-foreground hover:text-destructive hover:bg-destructive/5 transition-colors shadow-sm"
+                          >
+                            <Trash size={18} />
+                          </button>
+                        )}
                       </div>
+                      <input
+                        type="text"
+                        value={r.text}
+                        onChange={(e) => {
+                          const next = [...rangeVariants]
+                          next[i] = { ...r, text: e.target.value }
+                          setRangeVariants(next)
+                        }}
+                        placeholder="Текст для этого диапазона"
+                        className="w-full h-12 px-4 rounded-xl bg-muted border border-border text-base focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      />
                     </div>
                   ))
                 ) : (
                   stringVariants.map((v, i) => (
-                    <div key={i} className="flex gap-2">
-                      <div className="double-bezel flex-1">
+                    <div key={i} className="flex gap-3">
+                      <div className="bg-white rounded-2xl shadow-sm border border-border overflow-hidden focus-within:ring-2 focus-within:ring-primary/50 transition-shadow flex-1">
                         <input
                           type="text"
                           value={v}
@@ -287,16 +291,16 @@ export function CommandFormPage() {
                             setStringVariants(next)
                           }}
                           placeholder={`Вариант ${i + 1}`}
-                          className="w-full h-10 px-4 double-bezel-inner text-sm focus:outline-none focus:ring-1 focus:ring-white/20"
+                          className="w-full h-14 px-5 text-base focus:outline-none bg-transparent placeholder:text-muted-foreground/50"
                         />
                       </div>
                       {stringVariants.length > 1 && (
                         <button
                           type="button"
                           onClick={() => setStringVariants(stringVariants.filter((_, j) => j !== i))}
-                          className="w-10 h-11 flex items-center justify-center rounded-xl bg-white/5 text-white/20 hover:text-destructive transition-colors"
+                          className="w-14 h-14 flex items-center justify-center rounded-2xl bg-white border border-border shadow-sm text-muted-foreground hover:text-destructive hover:bg-destructive/5 transition-colors"
                         >
-                          <Trash size={16} />
+                          <Trash size={20} />
                         </button>
                       )}
                     </div>
@@ -305,9 +309,9 @@ export function CommandFormPage() {
                 <button
                   type="button"
                   onClick={() => isRange ? setRangeVariants([...rangeVariants, { min: 0, max: 10, text: '' }]) : setStringVariants([...stringVariants, ''])}
-                  className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-white/30 hover:text-white transition-colors px-1"
+                  className="flex items-center justify-center gap-2 w-full h-14 rounded-2xl bg-accent text-primary font-bold text-base hover:bg-primary/20 transition-colors shadow-sm"
                 >
-                  <Plus size={14} weight="bold" />
+                  <Plus size={18} weight="bold" />
                   Добавить {isRange ? 'диапазон' : 'вариант'}
                 </button>
               </div>
@@ -315,49 +319,48 @@ export function CommandFormPage() {
           )}
 
           {/* Статус */}
-          <div className="flex items-center justify-between p-6 double-bezel">
-             <div className="double-bezel-inner w-full flex items-center justify-between p-4">
-                <div className="space-y-0.5">
-                  <p className="text-sm font-bold">Активность команды</p>
-                  <p className="text-[11px] text-white/30">Команда будет доступна в чате</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setEnabled(!enabled)}
-                  className="w-12 h-6 rounded-full bg-white/5 border border-white/5 relative transition-colors"
-                >
-                  <motion.div
-                    animate={{ x: enabled ? 24 : 4 }}
-                    className={cn('absolute top-1 w-4 h-4 rounded-full shadow-lg', enabled ? 'bg-success' : 'bg-white/20')}
-                  />
-                </button>
-             </div>
+          <div className="paper-card p-6 flex items-center justify-between">
+            <div className="space-y-1">
+              <p className="text-base font-bold text-foreground">Активность команды</p>
+              <p className="text-sm text-muted-foreground">Команда будет доступна в чате</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setEnabled(!enabled)}
+              className={cn(
+                'w-14 h-8 rounded-full relative transition-colors duration-300 shadow-inner',
+                enabled ? 'bg-success' : 'bg-border'
+              )}
+            >
+              <motion.div
+                animate={{ x: enabled ? 26 : 4 }}
+                className="absolute top-1 w-6 h-6 rounded-full bg-white shadow-sm"
+              />
+            </button>
           </div>
 
-          {error && <p className="text-xs text-destructive text-center">{error}</p>}
+          {error && <p className="text-sm text-destructive text-center bg-destructive/5 py-3 rounded-xl">{error}</p>}
 
           {/* Actions */}
-          <div className="flex items-center gap-4 pt-4">
+          <div className="flex items-center gap-4 pt-6">
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={loading}
-              className="flex-1 h-12 rounded-full bg-white text-black text-sm font-bold flex items-center justify-center gap-2 group shadow-xl shadow-white/5"
+              className="flex-1 h-14 rounded-full bg-foreground text-background text-base font-bold flex items-center justify-center gap-3 group shadow-lg"
             >
-              {loading ? <CircleNotch size={18} className="animate-spin" /> : (
+              {loading ? <CircleNotch size={24} className="animate-spin" /> : (
                 <>
                   <span>Сохранить</span>
-                  <div className="w-6 h-6 rounded-full bg-black/5 flex items-center justify-center group-hover:translate-x-1 transition-transform">
-                    <FloppyDisk size={14} weight="bold" />
-                  </div>
+                  <FloppyDisk size={20} weight="bold" className="group-hover:scale-110 transition-transform" />
                 </>
               )}
             </motion.button>
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="h-12 px-8 rounded-full glass text-sm font-bold text-white/40 hover:text-white transition-all"
+              className="h-14 px-8 rounded-full bg-white border border-border text-base font-bold text-foreground hover:bg-muted transition-all shadow-sm"
             >
               Отмена
             </button>
@@ -379,9 +382,9 @@ function FieldGroup({
 }) {
   return (
     <div className="space-y-3">
-      <label className="text-[11px] uppercase tracking-[0.2em] font-bold text-white/30 ml-1">{label}</label>
+      <label className="text-sm font-bold text-foreground ml-2">{label}</label>
       {children}
-      {error && <p className="text-[11px] text-destructive ml-1">{error}</p>}
+      {error && <p className="text-sm text-destructive ml-2">{error}</p>}
     </div>
   )
 }

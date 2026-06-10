@@ -6,7 +6,6 @@ import {
   Command as CommandIcon,
   Timer,
   Plus,
-  PencilSimple,
   Trash,
   WifiHigh,
   WifiSlash,
@@ -140,64 +139,68 @@ export function DashboardPage() {
   if (loading && !stats) {
     return (
       <div className="min-h-[100dvh] flex items-center justify-center bg-background">
-        <CircleNotch size={32} className="animate-spin text-white/20" />
+        <CircleNotch size={40} className="animate-spin text-primary" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-[100dvh] bg-background text-white pb-20">
+    <div className="min-h-[100dvh] bg-background text-foreground pb-20 relative overflow-hidden">
+      {/* Background Anime Blobs */}
+      <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-blue-200/20 blur-[100px] rounded-full pointer-events-none" />
+
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 px-4 py-4 pointer-events-none">
-        <div className="max-w-6xl mx-auto flex items-center justify-between pointer-events-auto">
-          <div className="glass px-4 h-11 rounded-full flex items-center gap-3">
-            <Robot size={20} className="text-white" weight="duotone" />
-            <span className="font-bold text-xs tracking-tight uppercase">Dashboard</span>
+      <header className="sticky top-0 z-50 px-4 py-4 glass-light mb-8">
+        <div className="max-w-6xl mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Robot size={28} className="text-primary" weight="duotone" />
+            <span className="font-serif font-bold text-xl tracking-tight">Dashboard</span>
           </div>
           
-          <div className="flex items-center gap-2">
-            <div className="glass px-4 h-11 rounded-full flex items-center gap-3">
-              <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-              <span className="text-xs font-medium text-white/70">{admin?.username}</span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
+              <span className="text-sm font-medium text-muted-foreground">{admin?.username}</span>
             </div>
             <button
               onClick={handleLogout}
-              className="glass w-11 h-11 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors text-white/70 hover:text-white"
+              className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
             >
-              <SignOut size={18} />
+              <SignOut size={20} />
             </button>
           </div>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 pt-24 space-y-12">
+      <main className="max-w-6xl mx-auto px-4 space-y-12 relative z-10">
         {/* Stats Bento Grid */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="grid grid-cols-1 md:grid-cols-4 gap-4"
+          className="grid grid-cols-1 md:grid-cols-4 gap-6"
         >
           <StatCard
-            icon={<Robot size={24} weight="duotone" />}
+            icon={<Robot size={28} className="text-primary" weight="duotone" />}
             label="Активный бот"
             value={stats?.botUsername || '...'}
             subValue={`Uptime: ${stats ? Math.floor(stats.uptime / 3600) : 0}h`}
           />
           <StatCard
-            icon={stats?.stream === 'online' ? <WifiHigh size={24} weight="duotone" /> : <WifiSlash size={24} />}
+            icon={stats?.stream === 'online' ? <WifiHigh size={28} className="text-success" weight="duotone" /> : <WifiSlash size={28} className="text-muted-foreground" />}
             label="Статус стрима"
             value={stats?.stream === 'online' ? 'Online' : 'Offline'}
-            valueClass={stats?.stream === 'online' ? 'text-success' : 'text-white/40'}
+            valueClass={stats?.stream === 'online' ? 'text-success' : 'text-muted-foreground'}
           />
           <StatCard
-            icon={<CommandIcon size={24} weight="duotone" />}
+            icon={<CommandIcon size={28} className="text-blue-400" weight="duotone" />}
             label="Команды"
             value={`${enabledCommands}`}
             subValue={`из ${commands.length}`}
           />
           <StatCard
-            icon={<Timer size={24} weight="duotone" />}
+            icon={<Timer size={28} className="text-purple-400" weight="duotone" />}
             label="Таймеры"
             value={`${enabledTimers}`}
             subValue={`из ${timers.length}`}
@@ -208,16 +211,16 @@ export function DashboardPage() {
           <motion.div 
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
-            className="text-xs text-destructive bg-destructive/5 border border-destructive/10 rounded-lg px-4 py-3 flex items-center justify-between"
+            className="text-sm text-destructive bg-destructive/5 border border-destructive/20 rounded-2xl px-6 py-4 flex items-center justify-between"
           >
             <span>{error}</span>
-            <button onClick={() => setError('')} className="underline text-white/50 hover:text-white">Закрыть</button>
+            <button onClick={() => setError('')} className="underline text-destructive/70 hover:text-destructive">Закрыть</button>
           </motion.div>
         )}
 
         {/* Search & Actions Bar */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="flex gap-2 p-1 bg-white/5 rounded-2xl w-max border border-white/5">
+          <div className="flex gap-2 p-1.5 bg-white rounded-full border border-border shadow-sm w-max">
             <TabButton
               active={activeTab === 'commands'}
               onClick={() => setActiveTab('commands')}
@@ -235,32 +238,32 @@ export function DashboardPage() {
           <div className="flex items-center gap-3">
             <div className="relative group">
               <MagnifyingGlass
-                size={18}
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-white transition-colors"
+                size={20}
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors"
               />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Поиск по триггеру..."
-                className="h-11 pl-11 pr-4 rounded-full bg-white/5 border border-white/5 text-sm w-full md:w-64 focus:w-full md:focus:w-80 transition-all focus:outline-none focus:ring-1 focus:ring-white/20 placeholder:text-white/20"
+                className="h-12 pl-12 pr-5 rounded-full bg-white border border-border text-base w-full md:w-64 focus:w-full md:focus:w-80 transition-all focus:outline-none focus:ring-2 focus:ring-primary/50 placeholder:text-muted-foreground shadow-sm"
               />
             </div>
             <button
               onClick={fetchData}
-              className="w-11 h-11 flex items-center justify-center rounded-full glass hover:bg-white/10 transition-all active:scale-95"
+              className="w-12 h-12 flex items-center justify-center rounded-full bg-white border border-border shadow-sm hover:bg-muted transition-all active:scale-95"
             >
-              <ArrowsClockwise size={18} className={cn(loading && 'animate-spin')} />
+              <ArrowsClockwise size={20} className={cn(loading && 'animate-spin')} />
             </button>
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => navigate(activeTab === 'commands' ? '/commands/new' : '/timers/new')}
-              className="h-11 px-5 rounded-full bg-white text-black text-sm font-bold flex items-center gap-2 group shadow-xl shadow-white/5"
+              className="h-12 px-6 rounded-full bg-foreground text-background text-base font-bold flex items-center gap-2 group shadow-lg hover:shadow-xl transition-all"
             >
               <span>Создать</span>
-              <div className="w-6 h-6 rounded-full bg-black/5 flex items-center justify-center group-hover:translate-x-1 transition-transform">
-                <Plus size={14} weight="bold" />
+              <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center group-hover:rotate-90 transition-transform duration-300">
+                <Plus size={16} weight="bold" />
               </div>
             </motion.button>
           </div>
@@ -274,7 +277,7 @@ export function DashboardPage() {
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 10 }}
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
             >
               {filteredCommands.map((cmd, i) => (
                 <CommandCard
@@ -288,7 +291,7 @@ export function DashboardPage() {
                   onDelete={() => handleDeleteCommand(cmd.id)}
                 />
               ))}
-              {filteredCommands.length === 0 && <EmptyState icon={<CommandIcon size={40} />} label="Команды не найдены" />}
+              {filteredCommands.length === 0 && <EmptyState icon={<CommandIcon size={48} />} label="Команды не найдены" />}
             </motion.div>
           ) : (
             <motion.div
@@ -296,7 +299,7 @@ export function DashboardPage() {
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 10 }}
-              className="grid grid-cols-1 md:grid-cols-2 gap-4"
+              className="grid grid-cols-1 md:grid-cols-2 gap-6"
             >
               {filteredTimers.map((timer, i) => (
                 <TimerCard
@@ -310,7 +313,7 @@ export function DashboardPage() {
                   onDelete={() => handleDeleteTimer(timer.id)}
                 />
               ))}
-              {filteredTimers.length === 0 && <EmptyState icon={<Timer size={40} />} label="Таймеры не найдены" />}
+              {filteredTimers.length === 0 && <EmptyState icon={<Timer size={48} />} label="Таймеры не найдены" />}
             </motion.div>
           )}
         </AnimatePresence>
@@ -337,16 +340,14 @@ function StatCard({
   className?: string
 }) {
   return (
-    <div className={cn('double-bezel h-32', className)}>
-      <div className="double-bezel-inner h-full p-6 flex flex-col justify-between">
-        <div className="flex items-center justify-between">
-          <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-white/30">{label}</span>
-          <div className="text-white/20">{icon}</div>
-        </div>
-        <div className="flex items-baseline gap-2">
-          <span className={cn('text-2xl font-bold tracking-tight', valueClass)}>{value}</span>
-          {subValue && <span className="text-xs text-white/20 font-medium">{subValue}</span>}
-        </div>
+    <div className={cn('paper-card p-6 h-36 flex flex-col justify-between', className)}>
+      <div className="flex items-center justify-between">
+        <span className="text-xs uppercase tracking-wider font-bold text-muted-foreground">{label}</span>
+        <div className="bg-muted p-2 rounded-xl">{icon}</div>
+      </div>
+      <div className="flex items-baseline gap-3">
+        <span className={cn('text-4xl font-serif text-foreground', valueClass)}>{value}</span>
+        {subValue && <span className="text-sm text-muted-foreground font-medium">{subValue}</span>}
       </div>
     </div>
   )
@@ -367,19 +368,19 @@ function TabButton({
     <button
       onClick={onClick}
       className={cn(
-        'relative px-6 py-2 rounded-xl text-sm font-bold transition-all duration-300',
-        active ? 'text-white' : 'text-white/30 hover:text-white/60'
+        'relative px-6 py-2.5 rounded-full text-base font-bold transition-all duration-300',
+        active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
       )}
     >
       {active && (
         <motion.div
           layoutId="activeTab"
-          className="absolute inset-0 bg-white/10 rounded-xl ring-1 ring-white/10 shadow-inner"
+          className="absolute inset-0 bg-accent rounded-full"
         />
       )}
       <span className="relative z-10 flex items-center gap-2">
         {label}
-        <span className={cn('text-[10px] px-1.5 py-0.5 rounded-md', active ? 'bg-white/10 text-white' : 'bg-white/5 text-white/20')}>
+        <span className={cn('text-xs px-2 py-0.5 rounded-full', active ? 'bg-white text-primary shadow-sm' : 'bg-muted text-muted-foreground')}>
           {count}
         </span>
       </span>
@@ -406,59 +407,54 @@ function CommandCard({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: index * 0.05, duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
-      className={cn('double-bezel group', command.enabled === 0 && 'grayscale opacity-50')}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.05, duration: 0.5, ease: [0.175, 0.885, 0.32, 1.275] }}
+      onClick={onEdit}
+      className={cn('paper-card paper-card-hover group flex flex-col', command.enabled === 0 && 'grayscale opacity-60')}
     >
-      <div className="double-bezel-inner p-5 space-y-4">
+      <div className="p-6 flex-1 space-y-4">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <code className="text-sm font-bold font-mono text-white group-hover:text-success transition-colors">
+            <code className="text-lg font-bold font-mono text-foreground group-hover:text-primary transition-colors">
               {command.trigger}
             </code>
-            <p className="text-[10px] uppercase tracking-widest text-white/30 font-bold">
+            <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold">
               {COMMAND_TYPE_LABELS[command.type]}
             </p>
           </div>
           <button
-            onClick={onToggle}
+            onClick={(e) => { e.stopPropagation(); onToggle(); }}
             disabled={togglingId === command.id}
-            className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-all"
+            className="w-10 h-10 rounded-full bg-muted flex items-center justify-center hover:bg-border transition-all"
           >
             {togglingId === command.id ? (
-              <CircleNotch size={14} className="animate-spin" />
+              <CircleNotch size={20} className="animate-spin" />
             ) : command.enabled === 1 ? (
-              <ToggleRight size={20} className="text-success" weight="fill" />
+              <ToggleRight size={28} className="text-success" weight="fill" />
             ) : (
-              <ToggleLeft size={20} className="text-white/20" />
+              <ToggleLeft size={28} className="text-muted-foreground" />
             )}
           </button>
         </div>
 
-        <p className="text-xs text-white/60 line-clamp-2 min-h-8" title={command.response}>
+        <p className="text-sm text-foreground/80 line-clamp-2 min-h-[2.5rem] leading-relaxed" title={command.response}>
           {command.response}
         </p>
+      </div>
 
-        <div className="pt-2 flex items-center justify-between border-t border-white/5">
-          <div className="flex gap-1">
-            <button
-              onClick={onEdit}
-              className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 text-white/40 hover:text-white transition-all"
-            >
-              <PencilSimple size={14} />
-            </button>
-            <button
-              onClick={onDelete}
-              disabled={deletingId === command.id}
-              className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-destructive/10 text-white/40 hover:text-destructive transition-all"
-            >
-              {deletingId === command.id ? <CircleNotch size={14} className="animate-spin" /> : <Trash size={14} />}
-            </button>
-          </div>
-          <button onClick={onEdit} className="text-[10px] font-bold uppercase tracking-wider text-white/20 hover:text-white flex items-center gap-1 transition-all">
-            Edit <ArrowRight size={10} />
+      <div className="px-6 py-4 flex items-center justify-between border-t border-border bg-muted/30 rounded-b-3xl">
+        <div className="flex gap-2">
+          <button
+            onClick={(e) => { e.stopPropagation(); onDelete(); }}
+            disabled={deletingId === command.id}
+            className="w-9 h-9 rounded-full bg-white flex items-center justify-center hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all shadow-sm border border-border"
+          >
+            {deletingId === command.id ? <CircleNotch size={16} className="animate-spin" /> : <Trash size={16} />}
           </button>
+        </div>
+        <div className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+          Редактировать <ArrowRight size={14} />
         </div>
       </div>
     </motion.div>
@@ -484,51 +480,46 @@ function TimerCard({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: index * 0.05, duration: 0.5, ease: [0.32, 0.72, 0, 1] }}
-      className={cn('double-bezel group', timer.enabled === 0 && 'grayscale opacity-50')}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: index * 0.05, duration: 0.5, ease: [0.175, 0.885, 0.32, 1.275] }}
+      onClick={onEdit}
+      className={cn('paper-card paper-card-hover group', timer.enabled === 0 && 'grayscale opacity-60')}
     >
-      <div className="double-bezel-inner p-6 flex items-center justify-between gap-6">
+      <div className="p-6 flex items-center justify-between gap-6">
         <div className="flex-1 space-y-2">
           <div className="flex items-center gap-3">
-            <code className="text-sm font-bold font-mono text-white">{timer.name}</code>
-            <span className="text-[10px] bg-white/5 px-2 py-0.5 rounded-full text-white/40 font-bold tracking-tight">
-              {timer.interval_minutes}m
+            <code className="text-lg font-bold font-mono text-foreground group-hover:text-primary transition-colors">{timer.name}</code>
+            <span className="text-xs bg-accent text-primary px-3 py-1 rounded-full font-bold tracking-tight">
+              {timer.interval_minutes} мин
             </span>
           </div>
-          <p className="text-xs text-white/50 truncate" title={timer.message}>
+          <p className="text-sm text-foreground/80 truncate leading-relaxed" title={timer.message}>
             {timer.message}
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <button
-            onClick={onToggle}
+            onClick={(e) => { e.stopPropagation(); onToggle(); }}
             disabled={togglingId === timer.id}
-            className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-all"
+            className="w-12 h-12 rounded-full bg-muted flex items-center justify-center hover:bg-border transition-all"
           >
             {togglingId === timer.id ? (
-              <CircleNotch size={16} className="animate-spin" />
+              <CircleNotch size={24} className="animate-spin" />
             ) : timer.enabled === 1 ? (
-              <ToggleRight size={24} className="text-success" weight="fill" />
+              <ToggleRight size={32} className="text-success" weight="fill" />
             ) : (
-              <ToggleLeft size={24} className="text-white/20" />
+              <ToggleLeft size={32} className="text-muted-foreground" />
             )}
           </button>
-          <div className="w-px h-8 bg-white/5 mx-1" />
+          <div className="w-px h-10 bg-border mx-1" />
           <button
-            onClick={onEdit}
-            className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 text-white/40 hover:text-white transition-all"
-          >
-            <PencilSimple size={18} />
-          </button>
-          <button
-            onClick={onDelete}
+            onClick={(e) => { e.stopPropagation(); onDelete(); }}
             disabled={deletingId === timer.id}
-            className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-destructive/10 text-white/40 hover:text-destructive transition-all"
+            className="w-12 h-12 rounded-full bg-white flex items-center justify-center hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-all shadow-sm border border-border"
           >
-            {deletingId === timer.id ? <CircleNotch size={18} className="animate-spin" /> : <Trash size={18} />}
+            {deletingId === timer.id ? <CircleNotch size={20} className="animate-spin" /> : <Trash size={20} />}
           </button>
         </div>
       </div>
@@ -538,11 +529,11 @@ function TimerCard({
 
 function EmptyState({ icon, label }: { icon: React.ReactNode; label: string }) {
   return (
-    <div className="col-span-full py-20 flex flex-col items-center justify-center space-y-4 opacity-20">
-      <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center">
+    <div className="col-span-full py-24 flex flex-col items-center justify-center space-y-6 opacity-60">
+      <div className="w-24 h-24 rounded-full bg-white border border-border shadow-sm flex items-center justify-center text-primary">
         {icon}
       </div>
-      <p className="text-sm font-bold uppercase tracking-[0.2em]">{label}</p>
+      <p className="text-base font-serif font-bold text-foreground">{label}</p>
     </div>
   )
 }
