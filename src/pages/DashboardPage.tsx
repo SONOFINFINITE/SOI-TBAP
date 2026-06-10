@@ -154,9 +154,6 @@ export function DashboardPage() {
       <header className="sticky top-0 z-50 px-4 py-4 glass-light mb-8">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full border border-border overflow-hidden shadow-sm">
-              <img src="/01.jpg" alt="Logo" className="w-full h-full object-cover" />
-            </div>
             <span className="font-serif font-bold text-xl tracking-tight text-foreground">Панель Управления</span>
           </div>
           
