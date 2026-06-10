@@ -10,33 +10,56 @@ interface AuthState {
   hydrate: () => void
 }
 
+const STORAGE_KEY = 'auth-storage'
+const EXPIRATION_TIME = 24 * 60 * 60 * 1000 // 1 день в мс
+
+interface PersistedState {
+  token: string
+  admin: AdminInfo
+  timestamp: number
+}
+
 export const useAuthStore = create<AuthState>((set) => ({
   token: null,
   admin: null,
   isAuthenticated: false,
 
   setAuth: (token, admin) => {
-    localStorage.setItem('token', token)
-    localStorage.setItem('admin', JSON.stringify(admin))
+    const state: PersistedState = {
+      token,
+      admin,
+      timestamp: Date.now(),
+    }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
     set({ token, admin, isAuthenticated: true })
   },
 
   logout: () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('admin')
+    localStorage.removeItem(STORAGE_KEY)
     set({ token: null, admin: null, isAuthenticated: false })
   },
 
   hydrate: () => {
-    const token = localStorage.getItem('token')
-    const adminStr = localStorage.getItem('admin')
-    if (token && adminStr) {
-      try {
-        const admin = JSON.parse(adminStr) as AdminInfo
-        set({ token, admin, isAuthenticated: true })
-      } catch {
+    const stored = localStorage.getItem(STORAGE_KEY)
+    if (!stored) return
+
+    try {
+      const state = JSON.parse(stored) as PersistedState
+      const isExpired = Date.now() - state.timestamp > EXPIRATION_TIME
+
+      if (isExpired) {
+        localStorage.removeItem(STORAGE_KEY)
         set({ token: null, admin: null, isAuthenticated: false })
+      } else {
+        set({
+          token: state.token,
+          admin: state.admin,
+          isAuthenticated: true,
+        })
       }
+    } catch {
+      localStorage.removeItem(STORAGE_KEY)
+      set({ token: null, admin: null, isAuthenticated: false })
     }
   },
 }))

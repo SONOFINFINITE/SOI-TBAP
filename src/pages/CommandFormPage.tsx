@@ -147,7 +147,7 @@ export function CommandFormPage() {
   }
 
   return (
-    <div className="min-h-[100dvh] bg-background text-foreground pb-20 relative overflow-hidden">
+    <div className="min-h-dvh bg-background text-foreground pb-20 relative overflow-hidden">
       {/* Background Anime Blobs */}
       <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
 

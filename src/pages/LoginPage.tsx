@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { SignIn, Eye, EyeSlash, CircleNotch, Robot } from '@phosphor-icons/react'
+import { SignIn, Eye, EyeSlash, CircleNotch } from '@phosphor-icons/react'
 import { motion, AnimatePresence } from 'motion/react'
 import { login } from '@/api/client'
 import { useAuthStore } from '@/store/auth'
@@ -46,7 +46,7 @@ export function LoginPage() {
   }
 
   return (
-    <div className="min-h-[100dvh] flex items-center justify-center px-4 bg-background relative overflow-hidden">
+    <div className="min-h-dvh flex items-center justify-center px-4 bg-background relative overflow-hidden">
       {/* Background Anime Blobs */}
       <motion.div 
         animate={{ scale: [1, 1.05, 1], rotate: [0, 5, 0] }} 
@@ -70,9 +70,9 @@ export function LoginPage() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: "spring", stiffness: 200, damping: 15 }}
-            className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-white shadow-xl mb-6 border border-border"
+            className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-white shadow-xl mb-6 border border-border overflow-hidden"
           >
-            <Robot size={40} className="text-primary" weight="duotone" />
+            <img src="/01.jpg" alt="Logo" className="w-full h-full object-cover" />
           </motion.div>
           <h1 className="text-4xl font-serif text-foreground mb-3">Вход в систему</h1>
           <p className="text-base text-muted-foreground">Управление Twitch-ботом</p>
