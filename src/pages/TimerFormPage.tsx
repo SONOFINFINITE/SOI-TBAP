@@ -1,6 +1,7 @@
 import { useState, useEffect, type FormEvent } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, CircleNotch, FloppyDisk, Info } from '@phosphor-icons/react'
+import { motion } from 'motion/react'
+import { ArrowLeft, CircleNotch, FloppyDisk, Info, Timer } from '@phosphor-icons/react'
 import { getTimerCommand, createTimerCommand, updateTimerCommand } from '@/api/client'
 import { cn } from '@/lib/utils'
 import type { TimerCommandCreate, TimerCommandUpdate } from '@/types/api'
@@ -61,38 +62,22 @@ export function TimerFormPage() {
     setError('')
 
     try {
+      const data: TimerCommandUpdate = {
+        name: name.trim(),
+        message: message.trim(),
+        interval_minutes: intervalMinutes,
+        enabled,
+      }
+
       if (isEdit) {
-        const data: TimerCommandUpdate = {
-          name: name.trim(),
-          message: message.trim(),
-          interval_minutes: intervalMinutes,
-          enabled,
-        }
         await updateTimerCommand(Number(id), data)
       } else {
-        const data: TimerCommandCreate = {
-          name: name.trim(),
-          message: message.trim(),
-          interval_minutes: intervalMinutes,
-          enabled,
-        }
-        await createTimerCommand(data)
+        await createTimerCommand(data as TimerCommandCreate)
       }
 
       navigate('/', { replace: true })
     } catch (err: unknown) {
-      if (err && typeof err === 'object' && 'response' in err) {
-        const axiosErr = err as { response?: { status?: number; data?: { error?: string } } }
-        if (axiosErr.response?.status === 409) {
-          setError('Таймер с таким именем уже существует')
-        } else if (axiosErr.response?.status === 400) {
-          setError(axiosErr.response.data?.error || 'Ошибка валидации')
-        } else {
-          setError(axiosErr.response?.data?.error || 'Ошибка сервера')
-        }
-      } else {
-        setError('Нет соединения с сервером')
-      }
+      setError('Ошибка сохранения')
     } finally {
       setLoading(false)
     }
@@ -100,151 +85,132 @@ export function TimerFormPage() {
 
   if (fetching) {
     return (
-      <div className="min-h-dvh flex items-center justify-center">
-        <CircleNotch size={32} className="animate-spin text-primary" />
+      <div className="min-h-[100dvh] flex items-center justify-center bg-background">
+        <CircleNotch size={32} className="animate-spin text-white/20" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-dvh bg-background">
-      <header className="border-b sticky top-0 bg-background/80 backdrop-blur-sm z-10">
-        <div className="max-w-2xl mx-auto px-4 h-14 flex items-center gap-3">
+    <div className="min-h-dvh bg-background text-white pb-20">
+      <header className="fixed top-0 left-0 right-0 z-50 px-4 py-4 pointer-events-none">
+        <div className="max-w-2xl mx-auto flex items-center gap-3 pointer-events-auto">
           <button
             onClick={() => navigate(-1)}
-            className="p-2 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
+            className="glass w-11 h-11 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors text-white/70"
           >
             <ArrowLeft size={18} />
           </button>
-          <h1 className="font-semibold text-sm">
-            {isEdit ? 'Редактировать таймер' : 'Новый таймер'}
-          </h1>
+          <div className="glass px-4 h-11 rounded-full flex items-center gap-3">
+            <Timer size={20} className="text-white" weight="duotone" />
+            <span className="font-bold text-xs tracking-tight uppercase">
+              {isEdit ? 'Таймер' : 'Новый таймер'}
+            </span>
+          </div>
         </div>
       </header>
 
-      <main className="max-w-2xl mx-auto px-4 py-6">
-        <form onSubmit={handleSubmit} className="space-y-5">
+      <main className="max-w-2xl mx-auto px-4 pt-24">
+        <motion.form 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          onSubmit={handleSubmit} 
+          className="space-y-8"
+        >
           {/* Имя */}
           <FieldGroup label="Имя таймера" error={fieldErrors.name}>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => {
-                setName(e.target.value)
-                setFieldErrors((p) => ({ ...p, name: '' }))
-              }}
-              placeholder="tg_promo"
-              className={cn(
-                'w-full h-10 px-3 rounded-md bg-muted border text-sm font-mono',
-                'placeholder:text-muted-foreground/50',
-                'focus:outline-none focus:ring-2 focus:ring-ring',
-                fieldErrors.name && 'border-destructive'
-              )}
-            />
+            <div className="double-bezel">
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="promo_tg"
+                className="w-full h-11 px-4 double-bezel-inner text-sm font-mono focus:outline-none focus:ring-1 focus:ring-white/20"
+              />
+            </div>
           </FieldGroup>
 
           {/* Сообщение */}
           <FieldGroup label="Текст сообщения" error={fieldErrors.message}>
-            <textarea
-              value={message}
-              onChange={(e) => {
-                setMessage(e.target.value)
-                setFieldErrors((p) => ({ ...p, message: '' }))
-              }}
-              placeholder="Подпишись на телегу t.me/..."
-              rows={3}
-              className={cn(
-                'w-full px-3 py-2 rounded-md bg-muted border text-sm',
-                'placeholder:text-muted-foreground/50 resize-y',
-                'focus:outline-none focus:ring-2 focus:ring-ring',
-                fieldErrors.message && 'border-destructive'
-              )}
-            />
+            <div className="double-bezel">
+              <textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                placeholder="Подпишись на мой Telegram..."
+                rows={4}
+                className="w-full px-4 py-3 double-bezel-inner text-sm focus:outline-none focus:ring-1 focus:ring-white/20 resize-none"
+              />
+            </div>
           </FieldGroup>
 
           {/* Интервал */}
           <FieldGroup label="Интервал (минуты)" error={fieldErrors.interval}>
-            <input
-              type="number"
-              value={intervalMinutes}
-              min={1}
-              onChange={(e) => {
-                setIntervalMinutes(Number(e.target.value))
-                setFieldErrors((p) => ({ ...p, interval: '' }))
-              }}
-              className={cn(
-                'w-full h-10 px-3 rounded-md bg-muted border text-sm font-mono',
-                'focus:outline-none focus:ring-2 focus:ring-ring',
-                fieldErrors.interval && 'border-destructive'
-              )}
-            />
-            <div className="flex items-start gap-1.5 mt-1.5 text-xs text-muted-foreground">
-              <Info size={14} className="mt-0.5 shrink-0" />
-              <span>Сообщение отправляется в чат каждые N минут, пока стрим онлайн</span>
+            <div className="double-bezel">
+              <input
+                type="number"
+                value={intervalMinutes}
+                min={1}
+                onChange={(e) => setIntervalMinutes(Number(e.target.value))}
+                className="w-full h-11 px-4 double-bezel-inner text-sm font-mono focus:outline-none focus:ring-1 focus:ring-white/20"
+              />
+            </div>
+            <div className="flex items-start gap-2 mt-2 px-1">
+              <Info size={14} className="mt-0.5 text-white/30" />
+              <p className="text-[11px] text-white/40 leading-relaxed">
+                Сообщение будет отправляться в чат автоматически каждые {intervalMinutes} мин.
+              </p>
             </div>
           </FieldGroup>
 
           {/* Статус */}
-          <FieldGroup label="Статус">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={enabled}
-                onChange={(e) => setEnabled(e.target.checked)}
-                className="sr-only"
-              />
-              <div
-                className={cn(
-                  'w-9 h-5 rounded-full transition-colors relative',
-                  enabled ? 'bg-primary' : 'bg-muted-foreground/30'
-                )}
-              >
-                <div
-                  className={cn(
-                    'absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform',
-                    enabled ? 'translate-x-4' : 'translate-x-0.5'
-                  )}
-                />
-              </div>
-              <span className="text-sm">{enabled ? 'Активен' : 'Отключен'}</span>
-            </label>
-          </FieldGroup>
+          <div className="flex items-center justify-between p-6 double-bezel">
+             <div className="double-bezel-inner w-full flex items-center justify-between p-4">
+                <div className="space-y-0.5">
+                  <p className="text-sm font-bold">Активность таймера</p>
+                  <p className="text-[11px] text-white/30">Таймер будет работать во время стрима</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setEnabled(!enabled)}
+                  className="w-12 h-6 rounded-full bg-white/5 border border-white/5 relative transition-colors"
+                >
+                  <motion.div
+                    animate={{ x: enabled ? 24 : 4 }}
+                    className={cn('absolute top-1 w-4 h-4 rounded-full shadow-lg', enabled ? 'bg-success' : 'bg-white/20')}
+                  />
+                </button>
+             </div>
+          </div>
 
-          {error && (
-            <div className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-md px-3 py-2">
-              {error}
-            </div>
-          )}
+          {error && <p className="text-xs text-destructive text-center">{error}</p>}
 
-          {/* Кнопки */}
-          <div className="flex items-center gap-3 pt-2">
-            <button
+          {/* Actions */}
+          <div className="flex items-center gap-4 pt-4">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               type="submit"
               disabled={loading}
-              className={cn(
-                'h-10 px-5 rounded-md bg-primary text-primary-foreground text-sm font-medium',
-                'hover:bg-primary/90 transition-colors',
-                'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background',
-                'disabled:opacity-50 disabled:cursor-not-allowed',
-                'flex items-center gap-2'
-              )}
+              className="flex-1 h-12 rounded-full bg-white text-black text-sm font-bold flex items-center justify-center gap-2 group shadow-xl shadow-white/5"
             >
-              {loading ? (
-                <CircleNotch size={16} className="animate-spin" />
-              ) : (
-                <FloppyDisk size={16} weight="bold" />
+              {loading ? <CircleNotch size={18} className="animate-spin" /> : (
+                <>
+                  <span>Сохранить</span>
+                  <div className="w-6 h-6 rounded-full bg-black/5 flex items-center justify-center group-hover:translate-x-1 transition-transform">
+                    <FloppyDisk size={14} weight="bold" />
+                  </div>
+                </>
               )}
-              {loading ? 'Сохранение...' : 'Сохранить'}
-            </button>
+            </motion.button>
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="h-10 px-5 rounded-md border text-sm font-medium hover:bg-secondary transition-colors"
+              className="h-12 px-8 rounded-full glass text-sm font-bold text-white/40 hover:text-white transition-all"
             >
               Отмена
             </button>
           </div>
-        </form>
+        </motion.form>
       </main>
     </div>
   )
@@ -260,10 +226,10 @@ function FieldGroup({
   children: React.ReactNode
 }) {
   return (
-    <div className="space-y-1.5">
-      <label className="text-sm font-medium">{label}</label>
+    <div className="space-y-3">
+      <label className="text-[11px] uppercase tracking-[0.2em] font-bold text-white/30 ml-1">{label}</label>
       {children}
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && <p className="text-[11px] text-destructive ml-1">{error}</p>}
     </div>
   )
 }
