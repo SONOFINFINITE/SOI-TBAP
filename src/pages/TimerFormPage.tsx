@@ -85,7 +85,7 @@ export function TimerFormPage() {
 
   if (fetching) {
     return (
-      <div className="min-h-[100dvh] flex items-center justify-center bg-background">
+      <div className="min-h-dvh flex items-center justify-center bg-background">
         <CircleNotch size={32} className="animate-spin text-white/20" />
       </div>
     )

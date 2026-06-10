@@ -420,7 +420,7 @@ function CommandCard({
           </button>
         </div>
 
-        <p className="text-xs text-white/60 line-clamp-2 min-h-[2rem]" title={command.response}>
+        <p className="text-xs text-white/60 line-clamp-2 min-h-8" title={command.response}>
           {command.response}
         </p>
 
