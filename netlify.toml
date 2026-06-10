@@ -1,0 +1,26 @@
+[build]
+  publish = "dist"
+  command = "npm run build"
+
+[[redirects]]
+  from = "/api/*"
+  to = "https://soi-tsuesiro-render.onrender.com/api/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/stats"
+  to = "https://soi-tsuesiro-render.onrender.com/stats"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/health"
+  to = "https://soi-tsuesiro-render.onrender.com/health"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

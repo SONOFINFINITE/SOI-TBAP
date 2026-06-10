@@ -13,7 +13,9 @@ import type {
   CommandType,
 } from '@/types/api'
 
-const API_BASE = 'https://soi-tsuesiro-render.onrender.com'
+const API_BASE = import.meta.env.DEV
+  ? 'https://soi-tsuesiro-render.onrender.com'
+  : ''
 
 const api = axios.create({
   baseURL: API_BASE,
