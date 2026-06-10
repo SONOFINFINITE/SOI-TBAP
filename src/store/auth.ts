@@ -5,6 +5,7 @@ interface AuthState {
   token: string | null
   admin: AdminInfo | null
   isAuthenticated: boolean
+  isHydrated: boolean
   setAuth: (token: string, admin: AdminInfo) => void
   logout: () => void
   hydrate: () => void
@@ -23,6 +24,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   token: null,
   admin: null,
   isAuthenticated: false,
+  isHydrated: false,
 
   setAuth: (token, admin) => {
     const state: PersistedState = {
@@ -41,7 +43,10 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   hydrate: () => {
     const stored = localStorage.getItem(STORAGE_KEY)
-    if (!stored) return
+    if (!stored) {
+      set({ isHydrated: true })
+      return
+    }
 
     try {
       const state = JSON.parse(stored) as PersistedState
@@ -49,17 +54,18 @@ export const useAuthStore = create<AuthState>((set) => ({
 
       if (isExpired) {
         localStorage.removeItem(STORAGE_KEY)
-        set({ token: null, admin: null, isAuthenticated: false })
+        set({ token: null, admin: null, isAuthenticated: false, isHydrated: true })
       } else {
         set({
           token: state.token,
           admin: state.admin,
           isAuthenticated: true,
+          isHydrated: true,
         })
       }
     } catch {
       localStorage.removeItem(STORAGE_KEY)
-      set({ token: null, admin: null, isAuthenticated: false })
+      set({ token: null, admin: null, isAuthenticated: false, isHydrated: true })
     }
   },
 }))

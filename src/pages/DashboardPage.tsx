@@ -157,12 +157,14 @@ export function DashboardPage() {
             <div className="w-10 h-10 rounded-full border border-border overflow-hidden shadow-sm">
               <img src="/01.jpg" alt="Logo" className="w-full h-full object-cover" />
             </div>
-            <span className="font-serif font-bold text-xl tracking-tight">Dashboard</span>
+            <span className="font-serif font-bold text-xl tracking-tight text-foreground">Панель Управления</span>
           </div>
           
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-success animate-pulse" />
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full border border-border overflow-hidden shadow-sm">
+                <img src="/01.jpg" alt="User" className="w-full h-full object-cover" />
+              </div>
               <span className="text-sm font-medium text-muted-foreground">{admin?.username}</span>
             </div>
             <button
